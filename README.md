@@ -42,7 +42,7 @@ use Illuminate\Support\Facades\Storage;
 
 $glow = Storage::disk('glow');
 $glow->put('glow.txt', 'Hello, flysystem!');
-var_dump($glow->get('glow.txt')); // URL for download file
+var_dump($glow->url('glow.txt')); // URL for download file
 var_dump($glow->delete('glow.txt'));
 ```
 
