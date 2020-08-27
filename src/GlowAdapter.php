@@ -38,24 +38,26 @@ class GlowAdapter implements AdapterInterface
      * @param string $path
      * @return string
      */
-    public function getUrl(string $path): string
+    public function getUrl(string $path, array $options = []): string
     {
-        $prefix = $this->isOpened($this->config) ? '' : '_';
-        $url = \rtrim($this->config->get('url'), '/');
-        $urn = '/' . $prefix . $this->config->get('bucket') . '/' . \ltrim($path, '/');
+        $config = new Config($options);
+        $config->setFallback($this->config);
+        $prefix = $this->isOpened($config) ? '' : '_';
+        $url = \rtrim($config->get('url'), '/');
+        $urn = '/' . $prefix . $config->get('bucket') . '/' . \ltrim($path, '/');
         return $url . $urn;
     }
 
     /**
      * @param string $path
      * @param $expiration
-     * @param $options
+     * @param array $options
      * @return string
      */
-    public function getTemporaryUrl(string $path, $expiration, $options): string
+    public function getTemporaryUrl(string $path, $expiration, array $options): string
     {
-        if ($this->isOpened($this->config)) {
-            return $this->getUrl($path);
+        if ($this->isOpened(new Config($options))) {
+            return $this->getUrl($path, $options);
         }
 
         $invite = $this->glow->inviteFile(
