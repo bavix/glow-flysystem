@@ -1,0 +1,38 @@
+{
+  "name": "bavix/glow-flysystem",
+  "description": "Adapter for work with Glow CDN using flysystem",
+  "license": "MIT",
+  "keywords": [
+    "laravel",
+    "glow",
+    "cdn",
+    "flysystem",
+    "file",
+    "manager"
+  ],
+  "authors": [
+    {
+      "name": "Babichev Maxim",
+      "email": "info@babichev.net"
+    }
+  ],
+  "require": {
+    "php": ">=7.3",
+    "nesbot/carbon": "^2.17",
+    "league/flysystem": "^1.0",
+    "laravel/framework": "^7.0",
+    "bavix/glow-api": "^1.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "Bavix\\Flysystem\\Glow\\": "src/"
+    }
+  },
+  "extra": {
+    "laravel": {
+      "providers": [
+        "Bavix\\Flysystem\\Glow\\GlowServiceProvider"
+      ]
+    }
+  }
+}
