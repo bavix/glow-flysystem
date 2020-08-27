@@ -54,10 +54,6 @@ class GlowAdapter implements AdapterInterface
      */
     public function getTemporaryUrl(string $path, $expiration, array $options): string
     {
-        if ($this->isOpened($this->config)) {
-            return $this->getUrl($path);
-        }
-
         $invite = $this->glow->inviteFile(
             $this->config->get('bucket'),
             $path,
