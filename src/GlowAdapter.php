@@ -259,7 +259,22 @@ class GlowAdapter implements AdapterInterface
      */
     public function getMetadata($path)
     {
-        // TODO: Implement getMetadata() method.
+        $metadata = $this->glow->showFile(
+            $this->config->get('bucket'),
+            $path,
+        );
+
+        $timestamp = $metadata['extra']['last_modified']
+            ?? $metadata['updated_at']
+            ?? $metadata['created_at']
+        ;
+
+        return [
+            'size' => $metadata['extra']['filesize'] ?? 0,
+            'timestamp' => \strtotime($timestamp),
+            'mimetype' => $metadata['extra']['mime'] ?? 'text/plain',
+            'visibility' => $metadata['visibility'] ?? false,
+        ];
     }
 
     /**
@@ -267,7 +282,7 @@ class GlowAdapter implements AdapterInterface
      */
     public function getSize($path)
     {
-        // TODO: Implement getSize() method.
+        return $this->getMetadata($path);
     }
 
     /**
@@ -275,7 +290,7 @@ class GlowAdapter implements AdapterInterface
      */
     public function getMimetype($path)
     {
-        // TODO: Implement getMimetype() method.
+        return $this->getMetadata($path);
     }
 
     /**
@@ -283,7 +298,7 @@ class GlowAdapter implements AdapterInterface
      */
     public function getTimestamp($path)
     {
-        // TODO: Implement getTimestamp() method.
+        return $this->getMetadata($path);
     }
 
     /**
@@ -291,7 +306,7 @@ class GlowAdapter implements AdapterInterface
      */
     public function getVisibility($path)
     {
-        // TODO: Implement getVisibility() method.
+        return $this->getMetadata($path);
     }
 
     /**
