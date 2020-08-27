@@ -20,6 +20,32 @@ Glow Flysystem Adapter - Easy work with Glow CDN API.
 * **PHP Version**: 7.3+ 
 * **[Composer](https://getcomposer.org/):** `composer require bavix/glow-flysystem`
 
+### Usage
+
+Add disk in config `config/filesystems.php`.
+```php
+    'disks' => [
+        'glow' => [
+            'driver' => 'glow',
+            'bucket' => env('GLOW_BUCKET'),
+            'url' => env('GLOW_URL'),
+            'endpoint' => env('GLOW_ENDPOINT'),
+            'token' => env('GLOW_TOKEN'),
+            'visibility' => 'public',
+        ],
+    ],
+```
+
+Usage example.
+```php
+use Illuminate\Support\Facades\Storage;
+
+$glow = Storage::disk('glow');
+$glow->put('glow.txt', 'Hello, flysystem!');
+var_dump($glow->get('glow.txt')); // URL for download file
+var_dump($glow->delete('glow.txt'));
+```
+
 ---
 Supported by
 
