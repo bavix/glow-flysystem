@@ -16,7 +16,7 @@ class GlowServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Storage::extend('glow', static function ($app, $config) {
-            return new Filesystem(new GlowAdapter(new Config($config)));
+            return new Filesystem(new GlowAdapter(new Config($config)), $config);
         });
     }
 
