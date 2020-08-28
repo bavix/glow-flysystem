@@ -166,8 +166,17 @@ class GlowAdapter implements AdapterInterface
      */
     public function deleteDir($dirname)
     {
+        $paths = \explode(':', $dirname);
+        $bucketName = \current($paths);
+        $viewName = null;
+        if (count($paths) === 2) {
+            $viewName = \end($paths);
+        }
+
         try {
-            $this->glow->dropBucket($dirname);
+            if ($viewName === null || $this->glow->dropView($bucketName, $viewName)) {
+                $this->glow->dropBucket($bucketName);
+            }
             return true;
         } catch (\Throwable $throwable) {
             return false;
@@ -179,8 +188,27 @@ class GlowAdapter implements AdapterInterface
      */
     public function createDir($dirname, Config $config)
     {
+        $paths = \explode(':', $dirname);
+        $bucketName = \current($paths);
+        $viewName = null;
+        if (count($paths) === 2) {
+            $viewName = \end($paths);
+        }
+
         try {
-            $this->glow->createBucket($dirname);
+            $this->glow->showOrCreateBucket($bucketName);
+            if ($viewName !== null) {
+                $this->glow->createView($bucketName, \array_filter([
+                    'name' => $viewName,
+                    'type' => $config->get('type'),
+                    'width' => $config->get('width'),
+                    'height' => $config->get('height'),
+                    'quality' => $config->get('quality'),
+                    'color' => $config->get('color'),
+                    'optimize' => $config->get('optimize'),
+                    'webp' => $config->get('webp'),
+                ]));
+            }
             return true;
         } catch (\Throwable $throwable) {
             return false;
