@@ -6,10 +6,11 @@ use Bavix\GlowApi\Api;
 use Bavix\GlowApi\File\Upload;
 use Bavix\GlowApi\HttpClient;
 use Carbon\Carbon;
+use League\Flysystem\Adapter\CanOverwriteFiles;
 use League\Flysystem\Config;
 use League\Flysystem\AdapterInterface;
 
-class GlowAdapter implements AdapterInterface
+class GlowAdapter implements AdapterInterface, CanOverwriteFiles
 {
 
     /**
