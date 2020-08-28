@@ -281,50 +281,11 @@ class GlowAdapter implements AdapterInterface
      */
     public function listContents($directory = '', $recursive = false)
     {
-        $uniqDirs = [];
-        $results = [];
-        $bucket = $this->config->get('bucket');
-        $iterate = $this->glow->allFiles($bucket);
-        foreach ($iterate as $file) {
-            $path = \substr($file['route'], \strlen($bucket) + 1);
-
-            $paths = ['.'];
-            $dirPath = \dirname($path);
-            if ($dirPath !== '.') {
-                $paths = \explode('/', $dirPath);
-            }
-
-            $dirname = $directory === '' ? current($paths) : $directory;
-            if (!$recursive && count($paths) > 1) {
-                $paths = [\current($paths), \end($paths)];
-            }
-
-            if (empty($file['extra']) || !\in_array($dirname, $paths, true)) {
-                continue;
-            }
-
-            $results[] = \compact('path') + $file['extra'];
-
-            $breadcrumbs = [];
-            foreach ($paths as $dir) {
-                if ($dir === '.') {
-                    continue;
-                }
-
-                $breadcrumbs[] = $dir;
-                $folderPath = \implode('/', $breadcrumbs);
-                if (!isset($uniqDirs[$folderPath])) {
-                    $uniqDirs[$folderPath] = true;
-                    $results[] = [
-                        'type' => 'dir',
-                        'path' => \implode('/', $breadcrumbs),
-                        'timestamp' => $file['extra']['timestamp'],
-                    ];
-                }
-            }
-        }
-
-        return $results;
+        return $this->glow->listContents(
+            $this->config->get('bucket'),
+            $directory,
+            $recursive
+        );
     }
 
     /**
