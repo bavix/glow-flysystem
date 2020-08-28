@@ -336,6 +336,14 @@ class GlowAdapter implements AdapterInterface
     }
 
     /**
+     * @return Api
+     */
+    public function getGlow(): Api
+    {
+        return $this->glow;
+    }
+
+    /**
      * @param Config $config
      * @return bool
      */
