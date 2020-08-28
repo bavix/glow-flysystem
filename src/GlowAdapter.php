@@ -6,11 +6,10 @@ use Bavix\GlowApi\Api;
 use Bavix\GlowApi\File\Upload;
 use Bavix\GlowApi\HttpClient;
 use Carbon\Carbon;
-use League\Flysystem\Adapter\CanOverwriteFiles;
 use League\Flysystem\Config;
 use League\Flysystem\AdapterInterface;
 
-class GlowAdapter implements AdapterInterface, CanOverwriteFiles
+class GlowAdapter implements AdapterInterface
 {
 
     /**
@@ -167,7 +166,12 @@ class GlowAdapter implements AdapterInterface, CanOverwriteFiles
      */
     public function deleteDir($dirname)
     {
-        return false;
+        try {
+            $this->glow->dropBucket($dirname);
+            return true;
+        } catch (\Throwable $throwable) {
+            return false;
+        }
     }
 
     /**
@@ -175,7 +179,12 @@ class GlowAdapter implements AdapterInterface, CanOverwriteFiles
      */
     public function createDir($dirname, Config $config)
     {
-        return false;
+        try {
+            $this->glow->createBucket($dirname);
+            return true;
+        } catch (\Throwable $throwable) {
+            return false;
+        }
     }
 
     /**
@@ -244,15 +253,50 @@ class GlowAdapter implements AdapterInterface, CanOverwriteFiles
      */
     public function listContents($directory = '', $recursive = false)
     {
-        $iterate = $this->glow->allFiles(
-            $this->config->get('bucket'),
-        );
-
+        $uniqDirs = [];
+        $results = [];
+        $bucket = $this->config->get('bucket');
+        $iterate = $this->glow->allFiles($bucket);
         foreach ($iterate as $file) {
-            if (strpos($directory, $file['route']) !== false) {
-                yield $file;
+            $path = \substr($file['route'], \strlen($bucket) + 1);
+
+            $paths = ['.'];
+            $dirPath = \dirname($path);
+            if ($dirPath !== '.') {
+                $paths = \explode('/', $dirPath);
+            }
+
+            $dirname = $directory === '' ? current($paths) : $directory;
+            if (!$recursive && count($paths) > 1) {
+                $paths = [\current($paths), \end($paths)];
+            }
+
+            if (empty($file['extra']) || !\in_array($dirname, $paths, true)) {
+                continue;
+            }
+
+            $results[] = \compact('path') + $file['extra'];
+
+            $breadcrumbs = [];
+            foreach ($paths as $dir) {
+                if ($dir === '.') {
+                    continue;
+                }
+
+                $breadcrumbs[] = $dir;
+                $folderPath = \implode('/', $breadcrumbs);
+                if (!isset($uniqDirs[$folderPath])) {
+                    $uniqDirs[$folderPath] = true;
+                    $results[] = [
+                        'type' => 'dir',
+                        'path' => \implode('/', $breadcrumbs),
+                        'timestamp' => $file['extra']['timestamp'],
+                    ];
+                }
             }
         }
+
+        return $results;
     }
 
     /**
