@@ -264,15 +264,9 @@ class GlowAdapter implements AdapterInterface
             $path,
         );
 
-        $date = \strtotime($metadata['updated_at'] ?? $metadata['created_at']);
-        $timestamp = $metadata['extra']['last_modified'] ?? $date;
-
-        return [
-            'timestamp' => $timestamp,
-            'size' => $metadata['extra']['filesize'] ?? 0,
-            'mimetype' => $metadata['extra']['mime'] ?? 'text/plain',
+        return \array_merge($metadata['extra'] ?? [], [
             'visibility' => $metadata['visibility'] ?? false,
-        ];
+        ]);
     }
 
     /**
