@@ -198,16 +198,23 @@ class GlowAdapter implements AdapterInterface
         try {
             $this->glow->showOrCreateBucket($bucketName);
             if ($viewName !== null) {
-                $this->glow->createView($bucketName, \array_filter([
+                $props = [
                     'name' => $viewName,
                     'type' => $config->get('type'),
                     'width' => $config->get('width'),
                     'height' => $config->get('height'),
                     'quality' => $config->get('quality'),
                     'color' => $config->get('color'),
+                    'position' => $config->get('position'),
+                    'upsize' => $config->get('upsize'),
+                    'strict' => $config->get('strict'),
                     'optimize' => $config->get('optimize'),
                     'webp' => $config->get('webp'),
-                ]));
+                ];
+
+                $this->glow->createView($bucketName, \array_filter($props, static function ($prop) {
+                    return $prop !== null;
+                }));
             }
             return true;
         } catch (\Throwable $throwable) {
