@@ -8,6 +8,7 @@ use Bavix\GlowApi\HttpClient;
 use Carbon\Carbon;
 use League\Flysystem\Config;
 use League\Flysystem\AdapterInterface;
+use League\Flysystem\Util;
 
 class GlowAdapter implements AdapterInterface
 {
@@ -23,11 +24,11 @@ class GlowAdapter implements AdapterInterface
     protected $glow;
 
     /**
-     * @param Config $config
+     * @param Config|array $config
      */
-    public function __construct(Config $config)
+    public function __construct($config)
     {
-        $this->config = $config;
+        $this->config = Util::ensureConfig($config);
         $this->glow = new Api(new HttpClient(
             $config->get('endpoint'),
             $config->get('token'),
