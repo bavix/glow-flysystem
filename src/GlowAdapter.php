@@ -24,15 +24,22 @@ class GlowAdapter implements AdapterInterface
     protected $glow;
 
     /**
+     * @var HttpClient
+     */
+    protected $http;
+
+    /**
      * @param Config|array $config
      */
     public function __construct($config)
     {
         $this->config = Util::ensureConfig($config);
-        $this->glow = new Api(new HttpClient(
-            $config->get('endpoint'),
-            $config->get('token'),
-        ));
+        $this->http = new HttpClient(
+            $this->config->get('endpoint'),
+            $this->config->get('token'),
+        );
+
+        $this->glow = new Api($this->http);
     }
 
     /**
